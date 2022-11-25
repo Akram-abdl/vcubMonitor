@@ -1,16 +1,26 @@
 package com.example.vcubmonitor
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,24 +40,46 @@ class MapFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lat = "44.83784"
-        lon = "-0.59028"
+        lat = "44.837789"
+        lon = "-0.57918"
         name = "Bordeaux"
     }
 
     private val callback = OnMapReadyCallback { googleMap ->
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        val latLng = LatLng(lat.toDouble(), lon.toDouble())
-        googleMap.addMarker(MarkerOptions().position(latLng).title(getString(R.string.maps_marker_title, name)))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11f))
+
+        addGoogleMapMarker(googleMap, "44.83784", "-0.59028", "CONNECTEE","ST Bruno", 34, 10)
+        addGoogleMapMarker(googleMap, "44.83803", "-0.58437", "DECONNECTEE","Meriadeck", 12, 2)
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat.toDouble(), lon.toDouble()), 12f))
+
+        googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
+            override fun getInfoWindow(arg0: Marker): View? {
+                return null
+            }
+
+            override fun getInfoContents(marker: Marker): View? {
+                val context: Context? = context
+
+                val info = LinearLayout(context)
+                info.orientation = LinearLayout.VERTICAL
+                val title = TextView(context)
+                title.setTextColor(Color.BLACK)
+                title.gravity = Gravity.CENTER
+                title.setTypeface(null, Typeface.BOLD)
+                title.text = marker.title
+                val snippet = TextView(context)
+                snippet.setTextColor(Color.GRAY)
+                snippet.text = marker.snippet
+                info.addView(title)
+                info.addView(snippet)
+                return info
+            }
+        })
+
+        googleMap.setOnMarkerClickListener { marker ->
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 15f))
+            true
+        }
     }
 
     override fun onCreateView(
@@ -62,5 +94,40 @@ class MapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+    }
+
+    fun addGoogleMapMarker(
+        googleMap: GoogleMap,
+        lat: String,
+        lon: String,
+        status: String,
+        name: String,
+        nbBikeAvailable: Int,
+        nbPlaceAvailable: Int,
+    ) {
+        val latLng = LatLng(lat.toDouble(), lon.toDouble())
+        val totalPlace = nbBikeAvailable + nbPlaceAvailable
+
+        googleMap.addMarker(
+            MarkerOptions()
+                .position(latLng)
+                .title(getString(R.string.maps_marker_title, name))
+                .snippet(getString(R.string.maps_marker_bike_available, nbBikeAvailable.toString())+"\n"
+                        +getString(R.string.maps_marker_place_available, nbPlaceAvailable.toString())+"\n"
+                        +getString(R.string.maps_marker_total_place, totalPlace.toString()))
+                .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColor(status)))
+        )
+    }
+
+    fun getMarkerColor(status: String): Float {
+        if (status === "CONNECTEE") {
+            return BitmapDescriptorFactory.HUE_GREEN
+        } else if (status === "MAINTENANCE") {
+            return BitmapDescriptorFactory.HUE_ORANGE
+        } else if(status === "DECONNECTEE") {
+            return BitmapDescriptorFactory.HUE_RED
+        }
+
+        return BitmapDescriptorFactory.HUE_BLUE
     }
 }
