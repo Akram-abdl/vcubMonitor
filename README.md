@@ -1,2 +1,2 @@
 # vcubeMonitor
-Projet Android vcubeMonitor
+Projet Android vcubMonitor
