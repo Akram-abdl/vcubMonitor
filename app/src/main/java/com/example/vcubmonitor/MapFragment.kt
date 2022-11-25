@@ -21,12 +21,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
  * A simple [Fragment] subclass.
  * Use the [MapFragment.newInstance] factory method to
@@ -37,6 +31,12 @@ class MapFragment : Fragment() {
     private lateinit var lon: String
     private lateinit var name: String
 
+    private val CONNECTED = "CONNECTEE"
+    private val DISCONNECTED = "DECONNECTEE"
+    private val MAINTENANCE = "MAINTENANCE"
+
+    private lateinit var googleMap: GoogleMap
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,10 +45,12 @@ class MapFragment : Fragment() {
         name = "Bordeaux"
     }
 
-    private val callback = OnMapReadyCallback { googleMap ->
+    private val callback = OnMapReadyCallback { gMap ->
+        googleMap = gMap
 
-        addGoogleMapMarker(googleMap, "44.83784", "-0.59028", "CONNECTEE","ST Bruno", 34, 10)
-        addGoogleMapMarker(googleMap, "44.83803", "-0.58437", "DECONNECTEE","Meriadeck", 12, 2)
+        //TODO Make a loop when we will have the method to call the API
+        addGoogleMapMarker("44.83784", "-0.59028", MAINTENANCE,"ST Bruno", 34, 10)
+        addGoogleMapMarker( "44.83803", "-0.58437", CONNECTED,"Meriadeck", 12, 2)
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat.toDouble(), lon.toDouble()), 12f))
 
@@ -77,7 +79,13 @@ class MapFragment : Fragment() {
         })
 
         googleMap.setOnMarkerClickListener { marker ->
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 15f))
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 15f))
+
+            if (marker.isInfoWindowShown) {
+                marker.hideInfoWindow()
+            } else {
+                marker.showInfoWindow()
+            }
             true
         }
     }
@@ -97,7 +105,6 @@ class MapFragment : Fragment() {
     }
 
     fun addGoogleMapMarker(
-        googleMap: GoogleMap,
         lat: String,
         lon: String,
         status: String,
@@ -120,14 +127,11 @@ class MapFragment : Fragment() {
     }
 
     fun getMarkerColor(status: String): Float {
-        if (status === "CONNECTEE") {
-            return BitmapDescriptorFactory.HUE_GREEN
-        } else if (status === "MAINTENANCE") {
-            return BitmapDescriptorFactory.HUE_ORANGE
-        } else if(status === "DECONNECTEE") {
-            return BitmapDescriptorFactory.HUE_RED
+        return when(status) {
+            CONNECTED -> BitmapDescriptorFactory.HUE_GREEN
+            MAINTENANCE -> BitmapDescriptorFactory.HUE_ORANGE
+            DISCONNECTED -> BitmapDescriptorFactory.HUE_RED
+            else -> BitmapDescriptorFactory.HUE_BLUE
         }
-
-        return BitmapDescriptorFactory.HUE_BLUE
     }
 }
