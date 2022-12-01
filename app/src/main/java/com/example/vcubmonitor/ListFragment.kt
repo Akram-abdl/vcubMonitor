@@ -1,5 +1,6 @@
 package com.example.vcubmonitor
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import android.widget.Toast
+import com.example.vcubmonitor.models.Station
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,8 +41,35 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         listViewData = view.findViewById(R.id.listViewData)
+        val stationList = mutableListOf<Station>(
+            Station(
+                "Avengers EndGame",
+                "Action",
+                12,
+                15,
+                16,
+                6,
+            )
+        )
+        listViewData.adapter = StationAdapter(
+            requireContext(),
+            R.layout.item_station,
+            stationList
+        )
+        listViewData.setOnItemClickListener { parent, view, position, id ->
+            val item = stationList.get(position)
 
+            val intentDetails = Intent(requireContext(), DetailsActivity::class.java)
 
+            // TODO : envoyer les informations (titre, catégorie etc ...)
+            /*
+            intentDetails.putExtra("title", item.name)
+            intentDetails.putExtra("category", item.category)
+            */
+            intentDetails.putExtra("station", item)
+
+            startActivity(intentDetails)
+        }
         
 
 
