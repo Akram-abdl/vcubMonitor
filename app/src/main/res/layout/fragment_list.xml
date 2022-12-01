@@ -6,12 +6,19 @@
     tools:context=".ListFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:text="@string/hello_blank_fragment"-->
+<!--        android:textColor="@color/blue_700"-->
+<!--        android:textStyle="bold"-->
+<!--        android:gravity="center"/>-->
+
+
+    <ListView
+        android:id="@+id/listViewData"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"
-        android:textColor="@color/blue_700"
-        android:textStyle="bold"
-        android:gravity="center"/>
 
+        />
 </FrameLayout>
