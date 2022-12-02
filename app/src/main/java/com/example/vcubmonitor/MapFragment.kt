@@ -35,13 +35,6 @@ class MapFragment : Fragment(), VolleyResultCallBack {
     private lateinit var lon: String
     private lateinit var name: String
 
-    private lateinit var listLat: Array<Double>
-    private lateinit var listLon: Array<Double>
-    private lateinit var listStatus: Array<String>
-    private lateinit var listName: Array<String>
-    private lateinit var nbBikeAvailable: Array<Int>
-    private lateinit var nbPlaceAvailable: Array<Int>
-
     private val CONNECTED = "CONNECTEE"
     private val DISCONNECTED = "DECONNECTEE"
     private val MAINTENANCE = "MAINTENANCE"
@@ -149,17 +142,9 @@ class MapFragment : Fragment(), VolleyResultCallBack {
     }
 
     override fun onVolleyResultListener(response: Any?) {
-        val jsonTbm = response as ApiOpenTbm
-        for(i in 0 until jsonTbm.records.size){
-            listLat.set(i,jsonTbm.records.get(i).fields.geometry.get(0))
-            listLon.set(i,jsonTbm.records.get(i).fields.geometry.get(1))
-            listStatus.set(i,jsonTbm.records.get(i).fields.etat)
-            listName.set(i,jsonTbm.records.get(i).fields.nom)
-            nbBikeAvailable.set(i,jsonTbm.records.get(i).fields.nbVeloTotal)
-            nbPlaceAvailable.set(i,jsonTbm.records.get(i).fields.nbPlaces)
-        }
-    }
+      val jsonTbm = response as ApiOpenTbm
 
+    }
     override fun onVolleyErrorListener(error: Any?) {
         TODO("Not yet implemented")
     }
