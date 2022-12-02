@@ -25,13 +25,19 @@
             android:value="AIzaSyBKkTZ3wnaGGJYGSFmDrcsGI18b9jFeC00" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".SplashScreenActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
 
             <meta-data
                 android:name="android.app.lib_name"
