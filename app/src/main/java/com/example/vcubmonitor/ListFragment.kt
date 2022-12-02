@@ -46,7 +46,6 @@ class ListFragment : Fragment(), VolleyResultCallBack{
     ): View? {
         // Inflate the layout for this fragment
 
-
         Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
@@ -119,7 +118,6 @@ class ListFragment : Fragment(), VolleyResultCallBack{
             startActivity(intentDetails)
 
         }
-
     }
 
     override fun onVolleyErrorListener(error: Any?) {
