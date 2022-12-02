@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.vcubmonitor.models.Station
 
 
@@ -42,9 +44,6 @@ private lateinit var myButton: Button
         Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,19 +70,13 @@ private lateinit var myButton: Button
 
             // TODO : envoyer les informations (titre, catégorie etc ...)
             /*
-            intentDetails.putExtra("title", item.name)
-            intentDetails.putExtra("category", item.category)
-            */
+        intentDetails.putExtra("title", item.name)
+        intentDetails.putExtra("category", item.category)
+        */
             intentDetails.putExtra("station", item)
 
             startActivity(intentDetails)
         }
-        
-
-
-
     }
-
-
 }
 
