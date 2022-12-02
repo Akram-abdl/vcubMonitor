@@ -13,6 +13,8 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.example.vcubmonitor.R
+import com.example.vcubmonitor.json.JsonTBM
+import com.example.vcubmonitor.json.VolleyResultCallBack
 import com.example.vcubmonitor.models.ApiOpenTbm
 import com.google.gson.Gson
 import utils.Constant
@@ -28,11 +30,12 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), VolleyResultCallBack{
 
 //    private var param1: String? = null
 //    private var param2: String? = null
-private lateinit var myButton: Button
+    private lateinit var myButton: Button
+    private lateinit var nomVille : String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,31 +50,17 @@ private lateinit var myButton: Button
         myButton = view.findViewById(R.id.myButton) as Button
 
         myButton.setOnClickListener {
-            // 4) requête HTTP avec Volley
-            // Instantiate the RequestQueue.
-            val queue = Volley.newRequestQueue(context)
-            //val url = String.format(Constant.URL, "Bordeaux") //bordeaux en dur
-            var url = Constant.URL
-            // Request a string response from the provided URL.
-            val stringRequest = StringRequest(
-                Request.Method.GET, url,
-                Response.Listener<String> { json ->
-                    Log.i("JSON", "succès: $json")
-                    parseJson(json)
-                },
-                Response.ErrorListener { error ->
-                    val json = String(error.networkResponse.data)
-                    Log.i("JSON", "erreur: $json")
-                    parseJson(json)
-                })
+            JsonTBM.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
 
-            // Add the request to the RequestQueue.
-            queue.add(stringRequest)
         }
     }
 
-    private fun parseJson(json: String?) {
-        val apiTBM = Gson().fromJson(json,ApiOpenTbm::class.java)
-        Log.i("Ville", "velo total = : ${apiTBM!!.records.get(0).fields.geometry.get(0)}")
+    override fun onVolleyResultListener(response: Any?) {
+        val jsonTbm = response as ApiOpenTbm
+        Log.i("JSON", "ville: ${jsonTbm.records.get(0).fields.nom}")
+    }
+
+    override fun onVolleyErrorListener(error: Any?) {
+        TODO("Not yet implemented")
     }
 }
