@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,8 @@ import androidx.fragment.app.Fragment
 import com.example.vcubmonitor.json.VolleyResultCallBack
 import com.example.vcubmonitor.json.synchDataJson
 import com.example.vcubmonitor.models.ApiOpenTbm
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -34,13 +32,6 @@ class MapFragment : Fragment(), VolleyResultCallBack {
     private lateinit var lat: String
     private lateinit var lon: String
     private lateinit var name: String
-
-    private lateinit var listLat: Array<Double>
-    private lateinit var listLon: Array<Double>
-    private lateinit var listStatus: Array<String>
-    private lateinit var listName: Array<String>
-    private lateinit var nbBikeAvailable: Array<Int>
-    private lateinit var nbPlaceAvailable: Array<Int>
 
     private val CONNECTED = "CONNECTEE"
     private val DISCONNECTED = "DECONNECTEE"
@@ -59,11 +50,9 @@ class MapFragment : Fragment(), VolleyResultCallBack {
     private val callback = OnMapReadyCallback { gMap ->
         googleMap = gMap
 
-        //TODO Make a loop when we will have the method to call the API
-        addGoogleMapMarker("44.83784", "-0.59028", MAINTENANCE,"ST Bruno", 34, 10)
-        addGoogleMapMarker( "44.83803", "-0.58437", CONNECTED,"Meriadeck", 12, 2)
-
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat.toDouble(), lon.toDouble()), 12f))
+
+        synchDataJson.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
 
         googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
             override fun getInfoWindow(arg0: Marker): View? {
@@ -114,19 +103,20 @@ class MapFragment : Fragment(), VolleyResultCallBack {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         //synchronise Json
-        synchDataJson.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
     }
 
-    fun addGoogleMapMarker(
-        lat: String,
-        lon: String,
+    private fun addGoogleMapMarker(
+        lat: Double,
+        lon: Double,
         status: String,
         name: String,
         nbBikeAvailable: Int,
         nbPlaceAvailable: Int,
     ) {
-        val latLng = LatLng(lat.toDouble(), lon.toDouble())
+        val latLng = LatLng(lat, lon)
         val totalPlace = nbBikeAvailable + nbPlaceAvailable
+
+        Log.i("name", name)
 
         googleMap.addMarker(
             MarkerOptions()
@@ -139,7 +129,7 @@ class MapFragment : Fragment(), VolleyResultCallBack {
         )
     }
 
-    fun getMarkerColor(status: String): Float {
+    private fun getMarkerColor(status: String): Float {
         return when(status) {
             CONNECTED -> BitmapDescriptorFactory.HUE_GREEN
             MAINTENANCE -> BitmapDescriptorFactory.HUE_ORANGE
@@ -151,12 +141,14 @@ class MapFragment : Fragment(), VolleyResultCallBack {
     override fun onVolleyResultListener(response: Any?) {
         val jsonTbm = response as ApiOpenTbm
         for(i in 0 until jsonTbm.records.size){
-            listLat.set(i,jsonTbm.records.get(i).fields.geometry.get(0))
-            listLon.set(i,jsonTbm.records.get(i).fields.geometry.get(1))
-            listStatus.set(i,jsonTbm.records.get(i).fields.etat)
-            listName.set(i,jsonTbm.records.get(i).fields.nom)
-            nbBikeAvailable.set(i,jsonTbm.records.get(i).fields.nbVeloTotal)
-            nbPlaceAvailable.set(i,jsonTbm.records.get(i).fields.nbPlaces)
+            addGoogleMapMarker(
+                jsonTbm.records[i].fields.geometry[1],
+                jsonTbm.records[i].fields.geometry[0],
+                jsonTbm.records[i].fields.etat,
+                jsonTbm.records[i].fields.nom,
+                jsonTbm.records[i].fields.nbVeloTotal,
+                jsonTbm.records[i].fields.nbPlaces
+            )
         }
     }
 
