@@ -10,8 +10,11 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.vcubmonitor.json.synchDataJson
+import com.example.vcubmonitor.json.VolleyResultCallBack
+import com.example.vcubmonitor.models.ApiOpenTbm
+import utils.Constant
 import com.example.vcubmonitor.models.Station
-
 
 
 
@@ -26,13 +29,16 @@ import com.example.vcubmonitor.models.Station
  * Use the [ListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), VolleyResultCallBack{
+    private lateinit var status : Array<String>
+    private lateinit var name : Array<String>
+    private lateinit var nbBikeAvailable : Array<Int>
+    private lateinit var nbPlaceAvailable : Array<Int>
+    private lateinit var nbVelosElectrique : Array<Int>
+    private lateinit var nbVeloClassiq : Array<Int>
     private lateinit var listViewData: ListView
 //    private var param1: String? = null
 //    private var param2: String? = null
-
-private lateinit var myButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +53,8 @@ private lateinit var myButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //synchronise Json
+        synchDataJson.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
         listViewData = view.findViewById(R.id.listViewData)
         val stationList = mutableListOf<Station>(
             Station(
@@ -76,7 +84,23 @@ private lateinit var myButton: Button
             intentDetails.putExtra("station", item)
 
             startActivity(intentDetails)
+
         }
     }
-}
 
+    override fun onVolleyResultListener(response: Any?) {
+        val jsonTbm = response as ApiOpenTbm
+        for(i in 0 until jsonTbm.records.size){
+            status.set(i,jsonTbm.records.get(i).fields.etat)
+            name.set(i,jsonTbm.records.get(i).fields.nom)
+            nbBikeAvailable.set(i,jsonTbm.records.get(i).fields.nbVeloTotal)
+            nbPlaceAvailable.set(i,jsonTbm.records.get(i).fields.nbPlaces)
+            nbVelosElectrique.set(i,jsonTbm.records.get(i).fields.nbVeloElec)
+            nbVeloClassiq.set(i,jsonTbm.records.get(i).fields.nbVeloClassic)
+        }
+    }
+
+    override fun onVolleyErrorListener(error: Any?) {
+        TODO("Not yet implemented")
+    }
+}

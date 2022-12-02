@@ -7,12 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".ListFragment">
 
-
-
-
-
-
-
     <TextView
         android:id="@+id/textViewTitle"
         android:layout_marginTop="16dp"
@@ -28,13 +22,9 @@
         android:layout_height="wrap_content"
         android:text="Voici la liste de films en cours de projection. Cliquez sur un film pour voir les details et nous contacter"/>
 
-
-
     <ListView
         android:id="@+id/listViewData"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
 </LinearLayout>
-
-
