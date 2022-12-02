@@ -11,6 +11,9 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.vcubmonitor.json.VolleyResultCallBack
+import com.example.vcubmonitor.json.synchDataJson
+import com.example.vcubmonitor.models.ApiOpenTbm
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
@@ -20,16 +23,24 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import utils.Constant
 
 /**
  * A simple [Fragment] subclass.
  * Use the [MapFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), VolleyResultCallBack {
     private lateinit var lat: String
     private lateinit var lon: String
     private lateinit var name: String
+
+    private lateinit var listLat: Array<Double>
+    private lateinit var listLon: Array<Double>
+    private lateinit var listStatus: Array<String>
+    private lateinit var listName: Array<String>
+    private lateinit var nbBikeAvailable: Array<Int>
+    private lateinit var nbPlaceAvailable: Array<Int>
 
     private val CONNECTED = "CONNECTEE"
     private val DISCONNECTED = "DECONNECTEE"
@@ -102,6 +113,8 @@ class MapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+        //synchronise Json
+        synchDataJson.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
     }
 
     fun addGoogleMapMarker(
@@ -133,5 +146,21 @@ class MapFragment : Fragment() {
             DISCONNECTED -> BitmapDescriptorFactory.HUE_RED
             else -> BitmapDescriptorFactory.HUE_BLUE
         }
+    }
+
+    override fun onVolleyResultListener(response: Any?) {
+        val jsonTbm = response as ApiOpenTbm
+        for(i in 0 until jsonTbm.records.size){
+            listLat.set(i,jsonTbm.records.get(i).fields.geometry.get(0))
+            listLon.set(i,jsonTbm.records.get(i).fields.geometry.get(1))
+            listStatus.set(i,jsonTbm.records.get(i).fields.etat)
+            listName.set(i,jsonTbm.records.get(i).fields.nom)
+            nbBikeAvailable.set(i,jsonTbm.records.get(i).fields.nbVeloTotal)
+            nbPlaceAvailable.set(i,jsonTbm.records.get(i).fields.nbPlaces)
+        }
+    }
+
+    override fun onVolleyErrorListener(error: Any?) {
+        TODO("Not yet implemented")
     }
 }

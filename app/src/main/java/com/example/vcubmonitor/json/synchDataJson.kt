@@ -6,15 +6,9 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.vcubmonitor.models.ApiOpenTbm
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.google.gson.internal.Primitives
-import com.google.gson.reflect.TypeToken
 
-object JsonTBM{
-    //private lateinit var nameVille : String
-
+object synchDataJson{
     fun <T> syncData(mContext: Context, url : String, classOfT: Class<T>?, resultCallBack: VolleyResultCallBack){
         val queue = Volley.newRequestQueue(mContext)
 
@@ -36,6 +30,5 @@ object JsonTBM{
     private fun <T> parseJson(json: String?, classOfT: Class<T>? ) : Any? {
         val apiTBM = Gson().fromJson(json, classOfT)
         return apiTBM
-       // nameVille = apiTBM.records.get(0).fields.nom
     }
 }
