@@ -50,7 +50,7 @@ class MapFragment : Fragment(), VolleyResultCallBack {
     private val callback = OnMapReadyCallback { gMap ->
         googleMap = gMap
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat.toDouble(), lon.toDouble()), 12f))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(lat.toDouble(), lon.toDouble()), 13f))
 
         synchDataJson.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
 
@@ -142,8 +142,8 @@ class MapFragment : Fragment(), VolleyResultCallBack {
         val jsonTbm = response as ApiOpenTbm
         for(i in 0 until jsonTbm.records.size){
             addGoogleMapMarker(
-                jsonTbm.records[i].fields.geometry[1],
                 jsonTbm.records[i].fields.geometry[0],
+                jsonTbm.records[i].fields.geometry[1],
                 jsonTbm.records[i].fields.etat,
                 jsonTbm.records[i].fields.nom,
                 jsonTbm.records[i].fields.nbVeloTotal,
