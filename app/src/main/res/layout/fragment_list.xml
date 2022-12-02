@@ -20,7 +20,7 @@
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Voici la liste de films en cours de projection. Cliquez sur un film pour voir les details et nous contacter"/>
+        android:text="Voici la liste des stations disponibles dans votre régions. Pour obtenir plus d'informations, cliquez sur une station."/>
 
     <ListView
         android:id="@+id/listViewData"

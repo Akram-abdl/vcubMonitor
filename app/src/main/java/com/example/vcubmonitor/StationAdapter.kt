@@ -46,10 +46,10 @@ class StationAdapter(context: Context, private val resource: Int, objects: Mutab
 
         // afficher les données dans textViewTitle et textViewCategory
         val item/*: Station*/ = getItem(position)/* as Station*/
-
+        val nbPlacesTotal : Int = item!!.nbvelos+ item!!.nbplaces
         myViewHolder.textViewNameList?.setText(item!!.nom)
         myViewHolder.textViewStateList?.setText(item!!.etat)
-        myViewHolder.textViewBikesAvailableList?.setText(item!!.nbvelos.toString())
+        myViewHolder.textViewBikesAvailableList?.setText(item!!.nbvelos.toString()+"/"+nbPlacesTotal + " vélos disponibles")
 //        myViewHolder.textViewElecBikes?.setText(item!!.nbelec)
 //        myViewHolder.textViewClassiqBikes?.setText(item!!.nbclassiq)
         // affichage de l'image

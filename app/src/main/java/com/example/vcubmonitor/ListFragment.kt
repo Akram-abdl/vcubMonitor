@@ -2,12 +2,11 @@ package com.example.vcubmonitor
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.vcubmonitor.json.synchDataJson
@@ -15,7 +14,7 @@ import com.example.vcubmonitor.json.VolleyResultCallBack
 import com.example.vcubmonitor.models.ApiOpenTbm
 import utils.Constant
 import com.example.vcubmonitor.models.Station
-
+import kotlin.properties.Delegates
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -30,13 +29,14 @@ import com.example.vcubmonitor.models.Station
  * create an instance of this fragment.
  */
 class ListFragment : Fragment(), VolleyResultCallBack{
-    private lateinit var status : Array<String>
-    private lateinit var name : Array<String>
-    private lateinit var nbBikeAvailable : Array<Int>
-    private lateinit var nbPlaceAvailable : Array<Int>
-    private lateinit var nbVelosElectrique : Array<Int>
-    private lateinit var nbVeloClassiq : Array<Int>
+    private lateinit var status : String
+    private lateinit var name : String
+    private var nbBikeAvailable by Delegates.notNull<Int>()
+    private var nbPlaceAvailable by Delegates.notNull<Int>()
+    private var nbVelosElectrique by Delegates.notNull<Int>()
+    private var nbVeloClassiq by Delegates.notNull<Int>()
     private lateinit var listViewData: ListView
+    private  lateinit var  textViewTitle : TextView
 //    private var param1: String? = null
 //    private var param2: String? = null
 
@@ -53,19 +53,52 @@ class ListFragment : Fragment(), VolleyResultCallBack{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        listViewData = view.findViewById(R.id.listViewData)
+        textViewTitle = view.findViewById(R.id.textViewTitle)
+        val title: String = "Les Stations"
+        textViewTitle.setText(title)
         //synchronise Json
         synchDataJson.syncData(requireContext(), Constant.URL, ApiOpenTbm::class.java,this)
-        listViewData = view.findViewById(R.id.listViewData)
+
+    }
+
+    override fun onVolleyResultListener(response: Any?) {
+        val jsonTbm = response as ApiOpenTbm
+
         val stationList = mutableListOf<Station>(
-            Station(
-                "Avengers EndGame",
-                "Action",
-                12,
-                15,
-                16,
-                6,
-            )
         )
+
+        for(i in 0 until jsonTbm.records.size){
+            status = jsonTbm.records.get(i).fields.etat
+            name = jsonTbm.records.get(i).fields.nom
+            nbBikeAvailable = jsonTbm.records.get(i).fields.nbVeloTotal
+            nbPlaceAvailable =jsonTbm.records.get(i).fields.nbPlaces
+            nbVelosElectrique = jsonTbm.records.get(i).fields.nbVeloElec
+            nbVeloClassiq = jsonTbm.records.get(i).fields.nbVeloClassic
+
+            val myStation = Station(
+                name,
+                status,
+                nbBikeAvailable,
+                nbPlaceAvailable,
+                nbVelosElectrique,
+                nbVeloClassiq,
+            )
+            stationList.add(i,myStation)
+
+
+
+
+
+//            status.set(i,jsonTbm.records.get(i).fields.etat)
+//            name.set(i,jsonTbm.records.get(i).fields.nom)
+//            nbBikeAvailable.set(i,jsonTbm.records.get(i).fields.nbVeloTotal)
+//            nbPlaceAvailable.set(i,jsonTbm.records.get(i).fields.nbPlaces)
+//            nbVelosElectrique.set(i,jsonTbm.records.get(i).fields.nbVeloElec)
+//            nbVeloClassiq.set(i,jsonTbm.records.get(i).fields.nbVeloClassic)
+        }
+
+
         listViewData.adapter = StationAdapter(
             requireContext(),
             R.layout.item_station,
@@ -86,18 +119,7 @@ class ListFragment : Fragment(), VolleyResultCallBack{
             startActivity(intentDetails)
 
         }
-    }
 
-    override fun onVolleyResultListener(response: Any?) {
-        val jsonTbm = response as ApiOpenTbm
-        for(i in 0 until jsonTbm.records.size){
-            status.set(i,jsonTbm.records.get(i).fields.etat)
-            name.set(i,jsonTbm.records.get(i).fields.nom)
-            nbBikeAvailable.set(i,jsonTbm.records.get(i).fields.nbVeloTotal)
-            nbPlaceAvailable.set(i,jsonTbm.records.get(i).fields.nbPlaces)
-            nbVelosElectrique.set(i,jsonTbm.records.get(i).fields.nbVeloElec)
-            nbVeloClassiq.set(i,jsonTbm.records.get(i).fields.nbVeloClassic)
-        }
     }
 
     override fun onVolleyErrorListener(error: Any?) {

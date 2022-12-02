@@ -36,13 +36,13 @@ class DetailsActivity : AppCompatActivity() {
         textViewName.setText(item?.nom)
         textViewState.setText(item?.etat)
         if (item != null) {
-            textViewBikesAvailable.setText(item.nbvelos.toString())
+            textViewBikesAvailable.setText(item.nbvelos.toString() + " vélos disponibles")
         }
         if (item != null) {
-            textViewElecBikes.setText(item.nbelec.toString())
+            textViewElecBikes.setText(item.nbelec.toString() + " vélos électriques disponibles" )
         }
         if (item != null) {
-            textViewClassiqBikes.setText(item.nbclassiq.toString())
+            textViewClassiqBikes.setText(item.nbclassiq.toString() + " vélos classiques disponibles")
         }
 
 
